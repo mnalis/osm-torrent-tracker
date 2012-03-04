@@ -394,6 +394,29 @@ class peertracker
 	// insert new peer
 	public static function new_peer()
 	{
+	        // check if this info hash is allowed (always allowed if we're open tracker)
+	        // whitelist example SQL command: "INSERT INTO pt_permissions SET info_hash=unhex('485B71A867930EBB23A4FD19B5D0749B9DD0AAC8'),allow=1"
+	        if (!$_SERVER['tracker']['open_tracker'])
+	        {
+	                $is_infohash_allowed = self::$api->fetch_once(
+                                // get flag: allow=0 (blacklist specified info_hash) or allow=1 (whitelist specified info_hash)
+                                // if not present in permissions database at all, $is_infohash_allowed[0] will be empty string.
+                                "SELECT allow FROM `{$_SERVER['tracker']['db_prefix']}permissions`" .
+                                // ... for our info_hash
+				"WHERE info_hash='" . self::$api->escape_sql($_GET['info_hash']) . "'"
+                        );
+                        
+                        // error_log ("new_peer check info_hash=" . bin2hex($_GET['info_hash']) . " allow=>" . $is_infohash_allowed[0] . "<");
+                        // FIXME: currently only whitelisting is supported. 
+                        // For blacklist, we either need another server flag to select if we're open or closed by default
+                        // or we would need to always query the database (increasing load on every new client)
+                        if ($is_infohash_allowed[0] != 1) 
+                        {
+                                // error_log ("rejecting info_hash=" . bin2hex($_GET['info_hash']) . " allow=>" . $is_infohash_allowed[0] . "<");
+                                tracker_error ('this info hash is not allowed');
+                        }
+	        }
+	        
 		// insert peer
 		self::$api->query(
 			// insert into the peers table

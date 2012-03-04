@@ -453,6 +453,14 @@ function setupMySQL()
 				"`name` varchar(5) NOT NULL," . 
 				"`value` int(10) unsigned NOT NULL" . 
 			") ENGINE=MyISAM DEFAULT CHARSET=latin1"
+                ) &&
+		peertracker::$api->query("DROP TABLE IF EXISTS `{$_SERVER['tracker']['db_prefix']}permissions`") &&
+		peertracker::$api->query(
+			"CREATE TABLE IF NOT EXISTS `{$_SERVER['tracker']['db_prefix']}permissions` (" . 
+				"`info_hash` binary(20) NOT NULL," .
+				"`allow` tinyint(1) unsigned NOT NULL DEFAULT '0'," .
+				"PRIMARY KEY (`info_hash`)" .
+			") ENGINE=MyISAM DEFAULT CHARSET=latin1"
 		))
 	{
 		// Check Table

@@ -29,8 +29,8 @@ $_SERVER['tracker'] = array(
 	'open_tracker'      => true,          /* track anything announced to it */
 	'announce_interval' => 900,          /* how often client will send requests */
 	'min_interval'      => 60,           /* how often client can force requests */
-	'default_peers'     => 150,            /* default # of peers to announce */
-	'max_peers'         => 300,           /* max # of peers to announce */
+	'default_peers'     => 50,            /* default # of peers to announce */
+	'max_peers'         => 150,           /* max # of peers to announce */
 
 	// advanced tracker options
 	'external_ip'       => true,          /* allow client to specify ip address */

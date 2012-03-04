@@ -27,7 +27,7 @@
 $_SERVER['tracker'] = array(
 	// general tracker options
 	'open_tracker'      => true,          /* track anything announced to it */
-	'announce_interval' => 1800,          /* how often client will send requests */
+	'announce_interval' => 900,          /* how often client will send requests */
 	'min_interval'      => 60,           /* how often client can force requests */
 	'default_peers'     => 150,            /* default # of peers to announce */
 	'max_peers'         => 300,           /* max # of peers to announce */
@@ -35,7 +35,7 @@ $_SERVER['tracker'] = array(
 	// advanced tracker options
 	'external_ip'       => true,          /* allow client to specify ip address */
 	'force_compact'     => false,         /* force compact announces only */
-	'full_scrape'       => true,         /* allow scrapes without info_hash */
+	'full_scrape'       => true,          /* allow scrapes without info_hash */
 	'random_limit'      => 500,           /* if peers > #, use alternate SQL RAND() */
 	'clean_idle_peers'  => 20,            /* tweaks % of time tracker attempts idle peer removal */
 	                                      /* if you have a busy tracker, you may adjust this */

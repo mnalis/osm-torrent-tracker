@@ -26,9 +26,9 @@
 // tracker state
 $_SERVER['tracker'] = array(
 	// general tracker options
-	'open_tracker'      => true,          /* track anything announced to it */
-	'announce_interval' => 900,          /* how often client will send requests */
-	'min_interval'      => 60,           /* how often client can force requests */
+	'open_tracker'      => false,         /* track anything announced to it */
+	'announce_interval' => 900,           /* how often client will send requests */
+	'min_interval'      => 60,            /* how often client can force requests */
 	'default_peers'     => 30,            /* default # of peers to announce */
 	'max_peers'         => 100,           /* max # of peers to announce */
 

@@ -521,12 +521,19 @@ class peertracker
 	// tracker peer list
 	public static function peers()
 	{
-		// fetch peer total
-		$total = self::$api->fetch_once(
-			// select a count of the number of peers that match the given info_hash
-			"SELECT COUNT(*) FROM `{$_SERVER['tracker']['db_prefix']}peers` WHERE info_hash='{$_GET['info_hash']}'"
-		) OR tracker_error('failed to select peer count');
+                // fetch number of complete and incomplete peers
+                $counts = self::$api->fetch_once(
+                        // select total seeders and leechers
+                        'SELECT SUM(state=1), SUM(state=0) ' .
+                        // from peers
+                        "FROM `{$_SERVER['tracker']['db_prefix']}peers` " . 
+                        // that match info_hash
+                        "WHERE info_hash='" . self::$api->escape_sql($_GET['info_hash']) . "'"
+                ) OR tracker_error('unable to count complete/incomplete for the requested torrent');
+                
+                $total = $counts[0]+$counts[1]+0;
 
+                             
 		// select
 		$sql = 'SELECT ' . 
 			// 6-byte compacted peer info
@@ -539,19 +546,21 @@ class peertracker
 			// from peers table matching info_hash
 			"FROM `{$_SERVER['tracker']['db_prefix']}peers` WHERE info_hash='{$_GET['info_hash']}'" .
 			// less peers than requested, so return them all
-			($total[0] <= $_GET['numwant'] ? ';' : 
+			($total <= $_GET['numwant'] ? ';' : 
 				// if the total peers count is low, use SQL RAND
-				($total[0] <= $_SERVER['tracker']['random_limit'] ?
+				($total <= $_SERVER['tracker']['random_limit'] ?
 					" ORDER BY RAND() LIMIT {$_GET['numwant']};" : 
 					// use a more efficient but less accurate RAND
 					" LIMIT {$_GET['numwant']} OFFSET " . 
-					mt_rand(0, ($total[0]-$_GET['numwant']))
+					mt_rand(0, ($total-$_GET['numwant']))
 				)
 			);
 			
 		// begin response
 		$response = 'd8:intervali' . $_SERVER['tracker']['announce_interval'] . 
 		            'e12:min intervali' . $_SERVER['tracker']['min_interval'] . 
+                            'e8:completei' . ($counts[0]+0) . 
+                            'e10:downloadedi0e10:incompletei' . ($counts[1]+0) . 
 		            'e5:peers';
 
 		// compact announce
